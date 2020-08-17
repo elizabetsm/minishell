@@ -11,19 +11,15 @@
 #include <sys/wait.h>
 
 typedef struct	s_struct {
-	char		*inp;
-	char		**env;
-	char		*dir;
-	char 		**args;
+	char		*inp; /*здесь хранится ввод*/
+	char		**args; /*здесь хранится строка после вводаБ разделенная по словам*/
+	int			b_trig;
+	char 		*path;
 }				t_struct;
 
-// void print(char *name);
-//void			parce(t_struct *mini);
-//void			print_prompt(char *dir);
-//void			handler(t_struct *mini, char **env);
-//char			*ft_strjoin(char const *s1, char const *s2);
-//void			vvod(t_struct *mini);
-//void			ft_putchar(char c);
-//void			ft_putstr(char *str);
-
+void	echo_builtin(t_struct *st);
+void	check_built(t_struct *st, char ** env);
+void	execute(t_struct *st, char **env);
+void	input(t_struct *st);
+void	cd_builtin(t_struct *st, char **env);
 #endif
