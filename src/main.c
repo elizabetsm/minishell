@@ -38,6 +38,9 @@ void	execute(t_struct *st, char **env)
 	int		i;
 	pid_t	pid;
 
+//	char *en[2];
+//	en[0]= "PATH=/bin:/sbin";
+//	en[1] = ((void *) 0);
 	pid = fork();
 	if (pid == 0)
 	{
@@ -83,7 +86,26 @@ void ft_free(t_struct *st)
 //	}
 }
 
+void 	copy_env(t_struct *st, char **env)
+{
+	int i;
+	int j;
 
+	i = 0;
+	j = 0;
+	st->env = ft_memalloc(20);
+	while (env[i])
+	{
+		st->env[i] = ft_memalloc(ft_strlen(env[i]));
+		while (env[i][j])
+		{
+			st->env[i][j] = env[i][j];
+			j++;
+		}
+		j = 0;
+		i++;
+	}
+}
 
 int		main(int argc, char **argv, char **env)
 {
@@ -99,6 +121,7 @@ int		main(int argc, char **argv, char **env)
 		ft_putstr("\033[1;34m");
 		ft_putstr("pishi suda -> ");
 		ft_putstr("\033[0m");
+		copy_env(st, env);
 		input(st);
 		check_built(st, env);
 		if (st->b_trig == 0)
