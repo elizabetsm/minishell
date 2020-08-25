@@ -9,12 +9,15 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <signal.h>
 
 typedef struct	s_struct {
 	char		*inp; /*здесь хранится ввод*/
 	char		**args; /*здесь хранится строка после вводаБ разделенная по словам*/
 	int			b_trig;
 	char 		*path;
+	char 		**env;
 }				t_struct;
 
 void	echo_builtin(t_struct *st);

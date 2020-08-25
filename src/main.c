@@ -33,26 +33,106 @@ void	input(t_struct *st)
 	st->args[i] = NULL;
 }
 
-void	execute(t_struct *st, char **env)
+char	**get_path(char **env, char *path)
 {
 	int		i;
-	pid_t	pid;
+	int		j;
+	int		a;
+	char	*put;
+	char	**puti;
 
-//	char *en[2];
-//	en[0]= "PATH=/bin:/sbin";
-//	en[1] = ((void *) 0);
-	pid = fork();
-	if (pid == 0)
+	i = 0;
+	j = 0;
+	a = 0;
+	while (env[i] && path[j])
 	{
-		i = execve(st->args[0], st->args, env);
-		if (i < 0)
+		if (env[i][0] == path[j])
 		{
-			ft_putstr(st->args[0]);
-			ft_putstr(" : command not found\n");
+			while (path[j])
+			{
+				if (env[i][j] == path[j])
+					a++;
+				j++;
+			}
+			if (path[a] == '\0')
+			{
+				a = 0;
+				j = 0;
+				while (env[i][a] != '=')
+					a++;
+				a++;
+				put = (char *)malloc(sizeof(char) * 20);
+				while (env[i][a])
+				{
+					put[j] = env[i][a];
+					j++;
+					a++;
+				}
+				puti = ft_strsplit(put, ':');
+				return (puti);
+			}
+			else
+			{
+				j = 0;
+				a = 0;
+			}
+
 		}
+		i++;
 	}
-	else
-		wait(&pid);
+	return NULL;
+}
+
+char	*pathjoin(char *path, char *command)
+{
+	char	*tmp;
+	char	*put;
+
+	tmp = ft_strjoin(path, "/");
+	put = ft_strjoin(tmp, command);
+	return (put);
+}
+
+void	execute(t_struct *st, char **env)
+{
+	int			i;
+	pid_t		pid;
+	char 		**paths;
+	char		*path;
+	struct stat	*buf;
+
+	i = 0;
+	paths = get_path(env, "PATH");
+	while (paths[i])
+	{
+		path = pathjoin(paths[i], st->args[0]);
+		if (stat(path, buf) == 0)
+		{
+//			ft_memdel((void *)st->args[0]);
+//			st->args[0] = ft_memalloc(ft_strlen(path) + 1);
+			st->args[0] = ft_strcpy(st->args[0], path);
+			ft_putstr(st->args[0]);
+			if ((pid = fork()) == 0)
+			{
+//				if (strcmp(st->args[0], "exit"))
+//					kill(pid, SIGQUIT);
+				i = execve(st->args[0], st->args, env);
+				if (i < 0)
+				{
+					ft_putstr(st->args[0]);
+					ft_putstr(" : command not found\n");
+				}
+			}
+			else
+			{
+//				if (strcmp(st->args[0], "exit"))
+//					kill(pid, SIGQUIT);
+				wait(&pid);
+			}
+
+		}
+		i++;
+	}
 }
 
 void	check_built(t_struct *st, char **env)
@@ -68,7 +148,7 @@ void	check_built(t_struct *st, char **env)
 //	else if (strcmp(st->args[0], "env"))
 //		st->com_trig = 'e';
 //	else if (strcmp(st->args[0], "exit"))
-//		st->com_trig = 'e';
+//		kill
 }
 
 
