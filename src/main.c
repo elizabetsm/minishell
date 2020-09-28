@@ -93,6 +93,7 @@ char	*pathjoin(char *path, char *command)
 	return (put);
 }
 
+
 void	execute(t_struct *st, char **env)
 {
 	int			i;
