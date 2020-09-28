@@ -27,60 +27,64 @@ void	input(t_struct *st)
 	st->inp[i] = '\0';
 	st->args = ft_strsplit(st->inp, ' ');
 	i = 0;
-	while (st->args[i])
-		i++;
+//	while (st->args[i])
+//		i++;
 //	st->args[i] = ft_strdup(st->path);
-	st->args[i] = NULL;
+//	st->args[i] = NULL;
 }
 
-char	**get_path(char **env, char *path)
+void get_paths(t_struct *st, char *word)
 {
-	int		i;
-	int		j;
-	int		a;
-	char	*put;
-	char	**puti;
+	int i;
+	int j;
+	int k;
+	char *p;
 
 	i = 0;
 	j = 0;
-	a = 0;
-	while (env[i] && path[j])
+	k = 0;
+	while (st->env[i])
 	{
-		if (env[i][0] == path[j])
+		if (st->env[i][0] == word[0])
 		{
-			while (path[j])
+			while (word[j])
 			{
-				if (env[i][j] == path[j])
-					a++;
+				if (word[j] == st->env[i][j])
+					k++;
 				j++;
 			}
-			if (path[a] == '\0')
+			if (word[j] == '\0')
 			{
-				a = 0;
 				j = 0;
-				while (env[i][a] != '=')
-					a++;
-				a++;
-				put = (char *)malloc(sizeof(char) * 20);
-				while (env[i][a])
-				{
-					put[j] = env[i][a];
+				k = 0;
+				while (st->env[i][j] != '=')
 					j++;
-					a++;
+				p = ft_memalloc(sizeof(char *) * ft_strlen(st->env[i]) - k);
+				while (st->env[i][j])
+				{
+					p[k] = st->env[i][j];
+					k++;
+					j++;
 				}
-				puti = ft_strsplit(put, ':');
-				return (puti);
+				st->paths = ft_strsplit(p, ':');
+//				int a = -1;
+//				while (st->paths[++a])
+//				{
+//					ft_putstr(st->paths[a]);
+//
+//					ft_putchar('\n');
+//				}
+				return ;
 			}
 			else
 			{
+				k = 0;
 				j = 0;
-				a = 0;
 			}
 
 		}
 		i++;
 	}
-	return NULL;
 }
 
 char	*pathjoin(char *path, char *command)
@@ -93,25 +97,25 @@ char	*pathjoin(char *path, char *command)
 	return (put);
 }
 
-
 void	execute(t_struct *st, char **env)
 {
 	int			i;
 	pid_t		pid;
-	char 		**paths;
+	char 		*paths;
 	char		*path;
 	struct stat	*buf;
 
 	i = 0;
-	paths = get_path(env, "PATH");
-	while (paths[i])
+	get_paths(st, "PATH");
+	while (st->paths[i])
 	{
-		path = pathjoin(paths[i], st->args[0]);
+		buf = ft_memalloc(sizeof(&buf));
+		path = pathjoin(st->paths[i], st->args[0]);
 		if (stat(path, buf) == 0)
 		{
-//			ft_memdel((void *)st->args[0]);
-//			st->args[0] = ft_memalloc(ft_strlen(path) + 1);
-			st->args[0] = ft_strcpy(st->args[0], path);
+			//ft_memdel((void *)st->args[0]);
+			paths = ft_strcpy(st->args[0], path);
+			st->args[0] = paths;
 			ft_putstr(st->args[0]);
 			if ((pid = fork()) == 0)
 			{
@@ -130,7 +134,7 @@ void	execute(t_struct *st, char **env)
 //					kill(pid, SIGQUIT);
 				wait(&pid);
 			}
-
+		free((void *)buf);
 		}
 		i++;
 	}
@@ -195,7 +199,7 @@ int		main(int argc, char **argv, char **env)
 	st = malloc(sizeof(t_struct));
 	st->b_trig = 0;
 	char dir[PATH_MAX];
-	st->path = getcwd(dir, sizeof(dir));
+//	st->path = getcwd(dir, sizeof(dir));
 
 	while (1)
 	{
