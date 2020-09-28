@@ -23,17 +23,17 @@ all: $(NAME)
 %.o: %.c $(INC_FILE)
 	@$(CC) $(FLAGS) -c $< -o $@
 
-$(NAME): $(OBG) $(LIBRA)
+$(NAME): $(OBG)
 	make -C $(LIBFT)
 	@$(CC) $(FLAGS) $(OBG) -o $(NAME) $(LIBRA)
 
 clean:
-	make clean -C $(LIBFT)
+	make -C $(LIBFT) clean
 	@rm -f $(OBG)
 
 fclean: clean
-	make fclean -C $(LIBFT)
-	rm $(NAME)
+	make -C $(LIBFT) fclean
+	rm -f $(NAME)
 
 re: fclean all
 
