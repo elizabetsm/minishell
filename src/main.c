@@ -145,8 +145,8 @@ void	check_built(t_struct *st, char **env)
 		echo_builtin(st);
 	else if (ft_strcmp(st->args[0], "cd") == 0)
 		cd_builtin(st, env);
-//	else if (strcmp(st->args[0], "setenv"))
-//		st->com_trig = 's';
+	else if (strcmp(st->args[0], "setenv") == 0)
+		setenv_builtin(st);
 //	else if (strcmp(st->args[0], "unsetenv"))
 //		st->com_trig = 'u';
 	else if (ft_strcmp(st->args[0], "env") == 0)
@@ -170,7 +170,7 @@ void ft_free(t_struct *st)
 //	}
 }
 
-void 	copy_env(t_struct *st, char **env)
+void 	copy_env(t_struct *st, char **env) //какой то мусор в начале
 {
 	int i;
 	int j;
@@ -200,13 +200,12 @@ int		main(int argc, char **argv, char **env)
 	st->b_trig = 0;
 	char dir[PATH_MAX];
 //	st->path = getcwd(dir, sizeof(dir));
-
+	copy_env(st, env);
 	while (1)
 	{
 		ft_putstr("\033[1;34m");
 		ft_putstr("pishi suda -> ");
 		ft_putstr("\033[0m");
-		copy_env(st, env);
 		input(st);
 		check_built(st, env);
 		if (st->b_trig == 0)
