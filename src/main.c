@@ -189,6 +189,7 @@ void 	copy_env(t_struct *st, char **env)
 		j = 0;
 		i++;
 	}
+	st->env[i] = NULL;
 }
 
 int		main(int argc, char **argv, char **env)
