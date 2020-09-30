@@ -111,12 +111,11 @@ void	execute(t_struct *st, char **env)
 	{
 		buf = ft_memalloc(sizeof(&buf));
 		path = pathjoin(st->paths[i], st->args[0]);
-		if (stat(path, buf) == 0)
+		if (access(path, X_OK) != -1)
 		{
 			//ft_memdel((void *)st->args[0]);
 			paths = ft_strcpy(st->args[0], path);
 			st->args[0] = paths;
-			ft_putstr(st->args[0]);
 			if ((pid = fork()) == 0)
 			{
 //				if (strcmp(st->args[0], "exit"))
@@ -142,16 +141,16 @@ void	execute(t_struct *st, char **env)
 
 void	check_built(t_struct *st, char **env)
 {
-	if (strcmp(st->args[0], "echo") == 0)
+	if (ft_strcmp(st->args[0], "echo") == 0)
 		echo_builtin(st);
-	else if (strcmp(st->args[0], "cd") == 0)
+	else if (ft_strcmp(st->args[0], "cd") == 0)
 		cd_builtin(st, env);
 //	else if (strcmp(st->args[0], "setenv"))
 //		st->com_trig = 's';
 //	else if (strcmp(st->args[0], "unsetenv"))
 //		st->com_trig = 'u';
-//	else if (strcmp(st->args[0], "env"))
-//		st->com_trig = 'e';
+	else if (ft_strcmp(st->args[0], "env") == 0)
+		env_builtin(st);
 //	else if (strcmp(st->args[0], "exit"))
 //		kill
 }
