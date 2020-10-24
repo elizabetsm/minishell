@@ -6,11 +6,53 @@
 /*   By: efleta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/17 14:25:12 by efleta            #+#    #+#             */
-/*   Updated: 2020/08/17 14:25:15 by efleta           ###   ########.fr       */
+/*   Updated: 2020/10/24 16:24:04 by efleta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+
+
+void	parse_imp(t_struct *st)
+{
+	int	i;
+	int	j;
+	int	k;
+
+	i = 0;
+	j = 0;
+	k = 0;
+
+	st->args = (char **)ft_memalloc(sizeof(char *) * 10);
+	while (st->inp[i])
+	{
+		if (st->inp[i] == ' ')
+		{
+			i++;
+			continue;
+		}
+		else if (st->inp[i] == '	')
+		{
+			i++;
+			continue;
+		}
+		else
+		{
+			st->args[j] = (char *)ft_memalloc(sizeof(char) * 20);
+			while (st->inp[i] != ' ' && st->inp[i] != '\0')
+			{
+
+				st->args[j][k++] = st->inp[i++];
+			}
+			st->args[j][k] = '\0';
+			j++;
+			k = 0;
+		}
+		i++;
+	}
+	st->args[j] = NULL;
+}
 
 void	input(t_struct *st)
 {
@@ -24,21 +66,27 @@ void	input(t_struct *st)
 		st->inp[i] = buf;
 		i++;
 	}
-	st->inp[i] = '\0';
-	st->args = ft_strsplit(st->inp, ' ');
-	i = 0;
-//	while (st->args[i])
-//		i++;
-//	st->args[i] = ft_strdup(st->path);
-//	st->args[i] = NULL;
+	if (st->inp[0] != '\0')
+	{
+
+		st->inp[i] = '\0';
+		parse_imp(st);
+//		st->args = ft_strsplit(st->inp, ' ');
+//		i = 0;
+//		while (st->args[i])
+//		{
+//			printf("\n %d = .%s.\n", i, st->args[i]);
+//			i++;
+//		}
+	}
 }
 
-void get_paths(t_struct *st, char *word)
+void	get_paths(t_struct *st, char *word)
 {
-	int i;
-	int j;
-	int k;
-	char *p;
+	int		i;
+	int		j;
+	int		k;
+	char	*p;
 
 	i = 0;
 	j = 0;
@@ -67,13 +115,6 @@ void get_paths(t_struct *st, char *word)
 					j++;
 				}
 				st->paths = ft_strsplit(p, ':');
-//				int a = -1;
-//				while (st->paths[++a])
-//				{
-//					ft_putstr(st->paths[a]);
-//
-//					ft_putchar('\n');
-//				}
 				return ;
 			}
 			else
@@ -81,7 +122,6 @@ void get_paths(t_struct *st, char *word)
 				k = 0;
 				j = 0;
 			}
-
 		}
 		i++;
 	}
@@ -101,7 +141,7 @@ void	execute(t_struct *st, char **env)
 {
 	int			i;
 	pid_t		pid;
-	char 		*paths;
+	char		*paths;
 	char		*path;
 	struct stat	*buf;
 
@@ -113,13 +153,10 @@ void	execute(t_struct *st, char **env)
 		path = pathjoin(st->paths[i], st->args[0]);
 		if (access(path, X_OK) != -1)
 		{
-			//ft_memdel((void *)st->args[0]);
 			paths = ft_strcpy(st->args[0], path);
 			st->args[0] = paths;
 			if ((pid = fork()) == 0)
 			{
-//				if (strcmp(st->args[0], "exit"))
-//					kill(pid, SIGQUIT);
 				i = execve(st->args[0], st->args, env);
 				if (i < 0)
 				{
@@ -128,11 +165,7 @@ void	execute(t_struct *st, char **env)
 				}
 			}
 			else
-			{
-//				if (strcmp(st->args[0], "exit"))
-//					kill(pid, SIGQUIT);
 				wait(&pid);
-			}
 		free((void *)buf);
 		}
 		i++;
@@ -145,18 +178,17 @@ void	check_built(t_struct *st, char **env)
 		echo_builtin(st);
 	else if (ft_strcmp(st->args[0], "cd") == 0)
 		cd_builtin(st, env);
-	else if (strcmp(st->args[0], "setenv") == 0)
-		setenv_builtin(st);
+//	else if (strcmp(st->args[0], "setenv") == 0)
+//		setenv_builtin(st);
 //	else if (strcmp(st->args[0], "unsetenv"))
 //		st->com_trig = 'u';
-	else if (ft_strcmp(st->args[0], "env") == 0)
-		env_builtin(st);
-//	else if (strcmp(st->args[0], "exit"))
-//		kill
+//	else if (ft_strcmp(st->args[0], "env") == 0)
+//		env_builtin(st);
+	else if (strcmp(st->args[0], "exit") == 0)
+		exit(1);
 }
 
-
-void ft_free(t_struct *st)
+void	ft_free(t_struct *st)
 {
 	int i;
 
@@ -170,7 +202,7 @@ void ft_free(t_struct *st)
 //	}
 }
 
-void 	copy_env(t_struct *st, char **env) //какой то мусор в начале
+void	copy_env(t_struct *st, char **env) //какой то мусор в начале
 {
 	int i;
 	int j;
@@ -192,24 +224,50 @@ void 	copy_env(t_struct *st, char **env) //какой то мусор в нач�
 	st->env[i] = NULL;
 }
 
+void	print_dir(char *path)
+{
+	size_t i;
+
+	i = ft_strlen(path);
+	while (path[i] != '/')
+		i--;
+	ft_putstr("~/");
+	while (path[i++])
+		ft_putchar(path[i]);
+	ft_putchar(' ');
+}
+
+void	init_st(t_struct *st)
+{
+	st->inp = NULL;
+	st->b_trig = 0;
+	st->paths = NULL;
+	st->env = NULL;
+	st->args = NULL;
+}
+
 int		main(int argc, char **argv, char **env)
 {
 	t_struct	*st;
+	char		*dir;
 
 	st = malloc(sizeof(t_struct));
-	st->b_trig = 0;
-	char dir[PATH_MAX];
-//	st->path = getcwd(dir, sizeof(dir));
+
+
 	copy_env(st, env);
 	while (1)
 	{
 		ft_putstr("\033[1;34m");
-		ft_putstr("pishi suda -> ");
+		print_dir(getcwd(dir, sizeof(dir)));
 		ft_putstr("\033[0m");
 		input(st);
-		check_built(st, env);
-		if (st->b_trig == 0)
-			execute(st, env);
-		ft_free(st);
+		if (st->inp[0] != '\0')
+		{
+			check_built(st, env);
+			if (st->b_trig == 0)
+				execute(st, env);
+			ft_free(st);
+		}
+
 	}
 }
