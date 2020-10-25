@@ -40,7 +40,7 @@ void	parse_imp(t_struct *st)
 		else
 		{
 			st->args[j] = (char *)ft_memalloc(sizeof(char) * 20);
-			while (st->inp[i] != ' ' && st->inp[i] != '\0')
+			while (st->inp[i] != ' ' && st->inp[i] != '\0' && st->inp[i] != '	')
 			{
 
 				st->args[j][k++] = st->inp[i++];
@@ -143,13 +143,13 @@ void	execute(t_struct *st, char **env)
 	pid_t		pid;
 	char		*paths;
 	char		*path;
-	struct stat	*buf;
+//	struct stat	*buf;
 
 	i = 0;
 	get_paths(st, "PATH");
 	while (st->paths[i])
 	{
-		buf = ft_memalloc(sizeof(&buf));
+//		buf = ft_memalloc(sizeof(&buf));
 		path = pathjoin(st->paths[i], st->args[0]);
 		if (access(path, X_OK) != -1)
 		{
@@ -166,7 +166,7 @@ void	execute(t_struct *st, char **env)
 			}
 			else
 				wait(&pid);
-		free((void *)buf);
+//		free((void *)buf);
 		}
 		i++;
 	}
@@ -178,13 +178,13 @@ void	check_built(t_struct *st, char **env)
 		echo_builtin(st);
 	else if (ft_strcmp(st->args[0], "cd") == 0)
 		cd_builtin(st, env);
-//	else if (strcmp(st->args[0], "setenv") == 0)
-//		setenv_builtin(st);
-//	else if (strcmp(st->args[0], "unsetenv"))
+	else if (ft_strcmp(st->args[0], "setenv") == 0)
+		setenv_builtin(st);
+//	else if (ft_strcmp(st->args[0], "unsetenv"))
 //		st->com_trig = 'u';
-//	else if (ft_strcmp(st->args[0], "env") == 0)
-//		env_builtin(st);
-	else if (strcmp(st->args[0], "exit") == 0)
+	else if (ft_strcmp(st->args[0], "env") == 0)
+		env_builtin(st);
+	else if (ft_strcmp(st->args[0], "exit") == 0)
 		exit(1);
 }
 
@@ -261,7 +261,7 @@ int		main(int argc, char **argv, char **env)
 		print_dir(getcwd(dir, sizeof(dir)));
 		ft_putstr("\033[0m");
 		input(st);
-		if (st->inp[0] != '\0')
+		if (st->inp[0] != '\0' && st->args[0] != NULL)
 		{
 			check_built(st, env);
 			if (st->b_trig == 0)
