@@ -16,6 +16,7 @@ void cd_builtin(t_struct *st, char **env)
 {
 	char *dir;
 	char *curdir;
+	char *tmp;
 	char *curpath;
 	char **paths;
 	char *newdir;
@@ -27,10 +28,11 @@ void cd_builtin(t_struct *st, char **env)
 		dir = getcwd(dir, sizeof(dir));
 		paths = ft_strsplit(dir, '/');
 
-//		while (paths[i])
-//		{
-//			curpath =
-//		}
+		while (paths[i])
+		{
+			tmp = ft_strjoin(curpath, paths[i]);
+			
+		}
 		newdir = ft_strjoin(dir, st->args[1]);
 		chdir(newdir);
 		return ;

@@ -78,6 +78,7 @@ void	input(t_struct *st)
 //			printf("\n %d = .%s.\n", i, st->args[i]);
 //			i++;
 //		}
+//		ft_memdel((void **)st->inp);
 	}
 }
 
@@ -147,10 +148,12 @@ void	execute(t_struct *st, char **env)
 
 	i = 0;
 	get_paths(st, "PATH");
+	path = ft_strjoin("", st->args[0]);
 	while (st->paths[i])
 	{
 //		buf = ft_memalloc(sizeof(&buf));
-		path = pathjoin(st->paths[i], st->args[0]);
+//		if (access(path, X_OK) == -1)
+
 		if (access(path, X_OK) != -1)
 		{
 			paths = ft_strcpy(st->args[0], path);
@@ -166,8 +169,8 @@ void	execute(t_struct *st, char **env)
 			}
 			else
 				wait(&pid);
-//		free((void *)buf);
 		}
+		path = pathjoin(st->paths[i], st->args[0]);
 		i++;
 	}
 }
@@ -193,7 +196,7 @@ void	ft_free(t_struct *st)
 	int i;
 
 	i = 0;
-//	ft_memdel((void *)st->inp);
+
 	st->b_trig = 0;
 //	while (st->args[i])
 //	{
