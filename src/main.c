@@ -141,12 +141,14 @@ char	*pathjoin(char *path, char *command)
 void	execute(t_struct *st, char **env)
 {
 	int			i;
+	int 		trig;
 	pid_t		pid;
 	char		*paths;
 	char		*path;
 //	struct stat	*buf;
 
 	i = 0;
+	trig = 0;
 	get_paths(st, "PATH");
 	path = ft_strjoin("", st->args[0]);
 	while (st->paths[i])
@@ -156,13 +158,16 @@ void	execute(t_struct *st, char **env)
 
 		if (access(path, X_OK) != -1)
 		{
+			trig = 1;
 			paths = ft_strcpy(st->args[0], path);
 			st->args[0] = paths;
 			if ((pid = fork()) == 0)
 			{
+//
 				i = execve(st->args[0], st->args, env);
 				if (i < 0)
 				{
+//					trig = 0;
 					ft_putstr(st->args[0]);
 					ft_putstr(" : command not found\n");
 				}
@@ -172,6 +177,11 @@ void	execute(t_struct *st, char **env)
 		}
 		path = pathjoin(st->paths[i], st->args[0]);
 		i++;
+	}
+	if (trig == 0)
+	{
+		ft_putstr(st->args[0]);
+		ft_putstr(" : command not found\n");
 	}
 }
 
@@ -198,14 +208,9 @@ void	ft_free(t_struct *st)
 	i = 0;
 
 	st->b_trig = 0;
-//	while (st->args[i])
-//	{
-//		ft_memdel((void *)st->args[i]);
-//		i++;
-//	}
 }
 
-void	copy_env(t_struct *st, char **env) //какой то мусор в начале
+void	copy_env(t_struct *st, char **env)
 {
 	int i;
 	int j;
@@ -221,6 +226,7 @@ void	copy_env(t_struct *st, char **env) //какой то мусор в нача
 			st->env[i][j] = env[i][j];
 			j++;
 		}
+		st->env[i][j] = '\0';
 		j = 0;
 		i++;
 	}
@@ -254,15 +260,16 @@ int		main(int argc, char **argv, char **env)
 	t_struct	*st;
 	char		*dir;
 
-	st = malloc(sizeof(t_struct));
+	st = ft_memalloc(sizeof(t_struct));
 
-
+	init_st(st);
 	copy_env(st, env);
 	while (1)
 	{
 		ft_putstr("\033[1;34m");
-		print_dir(getcwd(dir, sizeof(dir)));
+		print_dir(st->dir = getcwd(dir, sizeof(dir)));
 		ft_putstr("\033[0m");
+		ft_putstr(st->env[0]);
 		input(st);
 		if (st->inp[0] != '\0' && st->args[0] != NULL)
 		{

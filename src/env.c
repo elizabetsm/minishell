@@ -19,7 +19,7 @@ void setenv_builtin(t_struct *st)
 	int i;
 
 	i = 0;
-
+	st->b_trig = 1;
 	while(st->env[i])
 		i++;
 	st->env[i] = ft_memalloc(sizeof(char *) * ft_strlen(st->args[1]));
