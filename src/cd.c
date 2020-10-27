@@ -12,52 +12,72 @@
 
 #include "../includes/minishell.h"
 
-void cd_builtin(t_struct *st, char **env)
+void	get_home(t_struct *st)
 {
-	char *curdir;
-	char 	*curhome;
-	int i;
-	int ret;
+	int		ret;
+	int		i;
 
-	i = 0;
 	ret = 0;
-	st->b_trig = 1;
-	curhome = ft_memalloc(sizeof(char *) * 30);
-	while (i < 2)
+	i = 0;
+	st->h_trig = 1;
+	st->homedir = ft_memalloc(sizeof(char *) * 30);
+	while (i < 2 && st->dir[ret] != '\0')
 	{
-		ft_putstr("aa");
-		curhome[ret] = st->dir[ret];
+		st->homedir[ret] = st->dir[ret];
 		ret++;
 		if (st->dir[ret] == '/')
 			i++;
 	}
-	curhome[ret] = '\0';
-	if (!st->args[1])
-	{
-		chdir(curhome);
-	}
-	else if (st->args[1][0] == '~')
-	{
-		i = 0;
-		ret = 0;
-		curdir = ft_memalloc(sizeof(char) * 15);
-		while (st->args[1][i]) {
-			if ((st->args[1][i] > 96 && st->args[1][i] < 123) ||
-			(st->args[1][i] < 91 && st->args[1][i] > 65)) {
-				curdir[ret] = st->args[1][i];
-				ret++;
-			}
-			i++;
-		}
-		curdir[ret] = '\0';
+	st->homedir[ret] = '\0';
+}
 
-		ret = chdir(curdir);
+void	cd_home(t_struct *st)
+{
+	char	*curdir;
+	char	*cddir;
+	char	*cdddir;
+	int		i;
+	int		ret;
+
+	ret = 0;
+	i = 0;
+	curdir = ft_memalloc(sizeof(char) * 15);
+	while (st->args[1][i++])
+	{
+		if ((st->args[1][i] > 96 && st->args[1][i] < 123) ||
+			(st->args[1][i] < 91 && st->args[1][i] > 65))
+			curdir[ret++] = st->args[1][i];
 	}
-	else if ((ret = chdir(st->args[1]))!= 0)
+	curdir[ret] = '\0';
+	cddir = ft_strjoin(st->homedir, "/");
+	cdddir = ft_strjoin(cddir, curdir);
+	if ((ret = chdir(cdddir)) != 0)
+	{
+		ft_putstr("cd: no such file or directory: ");
+		ft_putstr(cddir);
+		ft_putchar('\n');
+	}
+	ft_memdel((void **)curdir);
+	ft_memdel((void **)cddir);
+	ft_memdel((void **)cdddir);
+}
+
+void	cd_builtin(t_struct *st)
+{
+	int		ret;
+
+	ret = 0;
+	st->b_trig = 1;
+	if (st->h_trig == 0)
+		get_home(st);
+	if (!st->args[1])
+		chdir(st->homedir);
+	else if (st->args[1][0] == '~')
+		cd_home(st);
+	else if ((ret = chdir(st->args[1])) != 0)
 	{
 		ft_putstr("cd: no such file or directory: ");
 		ft_putstr(st->args[1]);
 		ft_putchar('\n');
 	}
-//	ft_memdel((void **)curhome);
 }
