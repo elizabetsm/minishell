@@ -4,7 +4,9 @@ LIBFT = libft/
 
 FILES = src/main.c \
         src/echo.c \
-        src/cd.c
+        src/cd.c \
+		src/env.c \
+		src/utilities.c
 
 LIBRA = libft/libft.a
 
@@ -16,7 +18,7 @@ FLAGS = -Wall -Wextra -Werror -I $(INC)
 
 OBG = $(FILES:.c=.o)
 
-CC = gcc
+CC = gcc -g
 
 all: $(NAME)
 
