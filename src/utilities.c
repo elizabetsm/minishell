@@ -11,25 +11,30 @@ char	*pathjoin(char *path, char *command)
 {
 	char	*tmp;
 	char	*put;
+	char *t;
 
-	tmp = ft_strjoin(path, "/");
-	put = ft_strjoin(tmp, command);
+	t = ft_strdup("/");
+	tmp = ft_strjoin(&path, &t, 0, 1);
+	put = ft_strjoin(&tmp, &command, 1, 0);
 	return (put);
 }
 
 void		delete_splitted_line(char ***splitted_line)
 {
 	int i;
+	char **tmp;
 
 	i = 0;
-	while ((*splitted_line)[i])
+	tmp = *splitted_line;
+	while (tmp && tmp[i])
 	{
-		free((*splitted_line)[i]);
-		(*splitted_line)[i] = NULL;
+		ft_strdel(&tmp[i]);
+		tmp[i] = NULL;
 		i++;
 	}
-	free(*splitted_line);
-	splitted_line = NULL;
+	if (tmp)
+		free(tmp);
+	tmp = NULL;
 }
 
 void	ft_free(t_struct *st)
@@ -38,6 +43,7 @@ void	ft_free(t_struct *st)
 
 	i = 0;
 	st->b_trig = 0;
+	ft_strdel(&st->inp);
 	delete_splitted_line(&(st->args));
 }
 

@@ -22,10 +22,8 @@ void	parse_imp(t_struct *st)
 	j = 0;
 	k = 0;
 	st->args = (char **)ft_memalloc(sizeof(char *) * 10);
-
 	while (st->inp[i])
 	{
-		printf("envP: %p\n", st->inp[i]);
 		if (is_space(st->inp[i]) == 1)
 		{
 			i++;
@@ -53,48 +51,55 @@ void	input(t_struct *st)
 	int		i;
 
 	st->inp = (char *)malloc(sizeof(char *) * 100);
-
 	i = 0;
 	while (read(0, &buf, 1) && buf != '\n')
 	{
 		st->inp[i] = buf;
 		i++;
 	}
-//	ft_memdel((void **)st->inp);
 	st->inp[i] = '\0';
 	if (st->inp[0] != '\0')
 		parse_imp(st);
+}
 
+void	get_not_null_paths(t_struct *st, int i)
+{
+	int		j;
+	int		k;
+	char	*p;
+
+	j = 5;
+	k = 0;
+	p = ft_memalloc(sizeof(char *) * ft_strlen(st->env[i]) + 1 - j);
+	while (st->env[i][j])
+	{
+		p[k] = st->env[i][j];
+		k++;
+		j++;
+	}
+	st->paths = ft_strsplit(p, ':');
+	ft_memdel((void *)&p);
 }
 
 void	get_paths(t_struct *st, char *word)
 {
 	int		i;
-	int		j;
-	int		k;
-	char	*p;
 
 	i = 0;
 	while (st->env[i])
 	{
-
-		if (ft_strlen(st->env[i]) > 5 && st->env[i][0] == word[0] && st->env[i][1] == word[1] &&
-			st->env[i][2] == word[2] && st->env[i][3] == word[3] && st->env[i][4] == '=')
+		if (st->env[i][0] == word[0] && st->env[i][1] == word[1] &&
+			st->env[i][2] == word[2] && st->env[i][3] == word[3] &&
+			st->env[i][4] == '=')
 		{
-			j = 5;
-			k = 0;
-			p = ft_memalloc(sizeof(char *) * ft_strlen(st->env[i]) + 1 - j);
-			while (st->env[i][j])
-			{
-				p[k] = st->env[i][j];
-				k++;
-				j++;
-			}
-			st->paths = ft_strsplit(p, ':');
+			get_not_null_paths(st, i);
 			return ;
 		}
 		i++;
 	}
+	st->paths = (char **)ft_memalloc(sizeof(char *) * 2);
+	st->paths[0] = ft_strjoin(&st->paths[0], &st->args[0], 1, 0);
+	st->paths[1] = NULL;
 }
 
 int		exec(t_struct *st, char *path)
@@ -110,7 +115,7 @@ int		exec(t_struct *st, char *path)
 	st->args[0] = paths;
 	if ((pid = fork()) == 0)
 	{
-		i = execve(st->args[0], st->args, st->env);
+		i = execve(st->args[0], st->args, NULL);
 		if (i < 0)
 		{
 			ft_putstr(st->args[0]);
@@ -127,18 +132,21 @@ void	execute(t_struct *st)
 	int			i;
 	int			trig;
 	char		*path;
+	char		*tmp;
 
 	i = 0;
 	trig = 0;
 	get_paths(st, "PATH");
-	path = ft_strjoin("", st->args[0]);
-	while (st->paths[i])
+	tmp = ft_strdup("");
+	path = ft_strjoin(&tmp, &st->args[0], 1, 0);
+	while (st->paths[i++])
 	{
 		if (access(path, X_OK) != -1)
 			trig = exec(st, path);
+		ft_memdel((void *)&path);
 		path = pathjoin(st->paths[i], st->args[0]);
-		i++;
 	}
+	ft_memdel((void *)&path);
 	if (trig == 0)
 	{
 		ft_putstr(st->args[0]);
@@ -159,23 +167,32 @@ void	check_built(t_struct *st)
 	else if (ft_strcmp(st->args[0], "env") == 0)
 		env_builtin(st);
 	else if (ft_strcmp(st->args[0], "exit") == 0)
+	{
+		ft_strdel(&st->homedir);
+		ft_strdel(&st->dir);
+		delete_splitted_line(&(st->env));
+		ft_free(st);
+		free(st);
 		exit(1);
+	}
 }
 
 void	copy_env(t_struct *st, char **env)
 {
 	int i;
 	int j;
+	int k;
 
 	i = 0;
 	j = 0;
-	int k = -1;
+	k = -1;
 	while (env[++k])
 		;
 	st->env = (char **)ft_memalloc(sizeof(char *) * (k + 1));
 	while (env[i])
 	{
-		st->env[i] = (char *)ft_memalloc(sizeof(char *) * ft_strlen(env[i]) + 10 + 1);
+		st->env[i] = (char *)ft_memalloc(sizeof(char *) *
+				ft_strlen(env[i]) + 10 + 1);
 		while (env[i][j])
 		{
 			st->env[i][j] = env[i][j];
@@ -193,7 +210,7 @@ int		main(int argc, char **argv, char **env)
 	t_struct	*st;
 	char		*dir;
 
-	st = ft_memalloc(sizeof(t_struct));
+	st = (t_struct	*)ft_memalloc(sizeof(t_struct));
 	init_st(st);
 	copy_env(st, env);
 	while (1)
@@ -204,11 +221,14 @@ int		main(int argc, char **argv, char **env)
 		input(st);
 		if (st->inp[0] != '\0' && st->args[0] != NULL)
 		{
-
 			check_built(st);
 			if (st->b_trig == 0)
+			{
 				execute(st);
+				delete_splitted_line(&(st->paths));
+			}
 			ft_free(st);
 		}
+		ft_strdel(&st->dir);
 	}
 }

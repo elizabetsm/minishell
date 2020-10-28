@@ -49,17 +49,17 @@ void	cd_home(t_struct *st)
 			curdir[ret++] = st->args[1][i];
 	}
 	curdir[ret] = '\0';
-	cddir = ft_strjoin(st->homedir, "/");
-	cdddir = ft_strjoin(cddir, curdir);
+	cddir = ft_strdup("/");
+	cddir = ft_strjoin(&st->homedir, &cddir, 0, 1);
+	cdddir = ft_strjoin(&cddir, &curdir, 1, 1);
 	if ((ret = chdir(cdddir)) != 0)
 	{
 		ft_putstr("cd: no such file or directory: ");
-		ft_putstr(cddir);
+		ft_putstr(cdddir);
 		ft_putchar('\n');
+
 	}
-	ft_memdel((void **)curdir);
-	ft_memdel((void **)cddir);
-	ft_memdel((void **)cdddir);
+	ft_memdel((void **)&cdddir);
 }
 
 void	cd_builtin(t_struct *st)

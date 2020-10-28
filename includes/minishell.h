@@ -36,5 +36,6 @@ char	*pathjoin(char *path, char *command);
 void	ft_free(t_struct *st);
 void	print_dir(char *path);
 void	init_st(t_struct *st);
+void		delete_splitted_line(char ***splitted_line);
 
 #endif

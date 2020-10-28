@@ -20,13 +20,15 @@ OBG = $(FILES:.c=.o)
 
 CC = gcc -g
 
-all: $(NAME)
+all: lib $(NAME)
+
+lib:
+	@make -C $(LIBFT)
 
 %.o: %.c $(INC_FILE)
 	@$(CC) $(FLAGS) -c $< -o $@
 
 $(NAME): $(OBG)
-	make -C $(LIBFT)
 	@$(CC) $(FLAGS) $(OBG) -o $(NAME) $(LIBRA)
 
 clean:
