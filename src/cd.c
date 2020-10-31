@@ -31,6 +31,13 @@ void	get_home(t_struct *st)
 	st->homedir[ret] = '\0';
 }
 
+void	print_err(char *cdddir)
+{
+	ft_putstr("cd: no such file or directory: ");
+	ft_putstr(cdddir);
+	ft_putchar('\n');
+}
+
 void	cd_home(t_struct *st)
 {
 	char	*curdir;
@@ -40,9 +47,9 @@ void	cd_home(t_struct *st)
 	int		ret;
 
 	ret = 0;
-	i = 0;
+	i = -1;
 	curdir = ft_memalloc(sizeof(char) * 15);
-	while (st->args[1][i++])
+	while (st->args[1][++i])
 	{
 		if ((st->args[1][i] > 96 && st->args[1][i] < 123) ||
 			(st->args[1][i] < 91 && st->args[1][i] > 65))
@@ -53,12 +60,7 @@ void	cd_home(t_struct *st)
 	cddir = ft_strjoin(&st->homedir, &cddir, 0, 1);
 	cdddir = ft_strjoin(&cddir, &curdir, 1, 1);
 	if ((ret = chdir(cdddir)) != 0)
-	{
-		ft_putstr("cd: no such file or directory: ");
-		ft_putstr(cdddir);
-		ft_putchar('\n');
-
-	}
+		print_err(cdddir);
 	ft_memdel((void **)&cdddir);
 }
 
@@ -72,6 +74,11 @@ void	cd_builtin(t_struct *st)
 		get_home(st);
 	if (!st->args[1])
 		chdir(st->homedir);
+	else if (st->args[1][0] == '-')
+	{
+		ft_putstr("~\n");
+		chdir(st->homedir);
+	}
 	else if (st->args[1][0] == '~')
 		cd_home(st);
 	else if ((ret = chdir(st->args[1])) != 0)

@@ -1,17 +1,22 @@
-#include "../includes/minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utilities.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: efleta <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/30 17:36:44 by efleta            #+#    #+#             */
+/*   Updated: 2020/10/30 17:36:45 by efleta           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int		is_space(char c)
-{
-	if (c == ' ' || c == '	')
-		return (1);
-	return (0);
-}
+#include "../includes/minishell.h"
 
 char	*pathjoin(char *path, char *command)
 {
 	char	*tmp;
 	char	*put;
-	char *t;
+	char	*t;
 
 	t = ft_strdup("/");
 	tmp = ft_strjoin(&path, &t, 0, 1);
@@ -19,10 +24,10 @@ char	*pathjoin(char *path, char *command)
 	return (put);
 }
 
-void		delete_splitted_line(char ***splitted_line)
+void	delete_splitted_line(char ***splitted_line)
 {
-	int i;
-	char **tmp;
+	int		i;
+	char	**tmp;
 
 	i = 0;
 	tmp = *splitted_line;
@@ -39,9 +44,6 @@ void		delete_splitted_line(char ***splitted_line)
 
 void	ft_free(t_struct *st)
 {
-	int i;
-
-	i = 0;
 	st->b_trig = 0;
 	ft_strdel(&st->inp);
 	delete_splitted_line(&(st->args));
@@ -60,8 +62,9 @@ void	print_dir(char *path)
 	ft_putchar(' ');
 }
 
-void	init_st(t_struct *st)
+void	init_st(t_struct *st, char **argv)
 {
+	argv = NULL;
 	st->inp = NULL;
 	st->b_trig = 0;
 	st->paths = NULL;

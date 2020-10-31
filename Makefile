@@ -6,7 +6,9 @@ FILES = src/main.c \
         src/echo.c \
         src/cd.c \
 		src/env.c \
-		src/utilities.c
+		src/utilities.c \
+		src/utilities2.c \
+		src/utilities3.c
 
 LIBRA = libft/libft.a
 
@@ -18,7 +20,7 @@ FLAGS = -Wall -Wextra -Werror -I $(INC)
 
 OBG = $(FILES:.c=.o)
 
-CC = gcc -g
+CC = gcc -g -Wall -Wextra -Werror
 
 all: lib $(NAME)
 
