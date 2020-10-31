@@ -12,16 +12,6 @@
 
 #include "../includes/minishell.h"
 
-char	*ft_realloc(char *str, int new_size)
-{
-	char *newstr;
-
-	newstr = ft_memalloc(sizeof(char) * (ft_strlen(str) + new_size + 1));
-	ft_strcpy(newstr, str);
-	ft_memdel((void **)&str);
-	return (newstr);
-}
-
 void	input(t_struct *st)
 {
 	char	buf;
@@ -35,7 +25,6 @@ void	input(t_struct *st)
 		if (i > 0)
 			st->inp = ft_realloc(st->inp, sizeof(buf));
 		st->inp[i] = buf;
-
 		i++;
 	}
 	st->inp[i] = '\0';

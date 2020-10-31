@@ -84,5 +84,6 @@ void			ft_lstiter(t_list *lst, void (*f)(t_list *elem));
 t_list			*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
 char			**ft_strsplit1(char const *s, char c);
 char			**ft_strsplit2(char const *s, char *separators);
+int				contains_symbol(const char *str, char c);
 
 #endif

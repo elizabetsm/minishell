@@ -51,5 +51,6 @@ void			delete_splitted_line(char ***splitted_line);
 void			get_paths(t_struct *st, char *word);
 void			parse_input(t_struct *st);
 void			copy_env(t_struct *st, char **env, int argc);
+char			*ft_realloc(char *str, int new_size);
 
 #endif

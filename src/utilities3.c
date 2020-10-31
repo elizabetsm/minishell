@@ -19,6 +19,16 @@ int		is_space(char c)
 	return (0);
 }
 
+char	*ft_realloc(char *str, int new_size)
+{
+	char *newstr;
+
+	newstr = ft_memalloc(sizeof(char) * (ft_strlen(str) + new_size + 1));
+	ft_strcpy(newstr, str);
+	ft_memdel((void **)&str);
+	return (newstr);
+}
+
 void	copy_env(t_struct *st, char **env, int argc)
 {
 	int i;

@@ -1,30 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strsplit.c                                      :+:      :+:    :+:   */
+/*   ft_strsplit2.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vbrazhni <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: efleta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/07/02 19:09:23 by vbrazhni          #+#    #+#             */
-/*   Updated: 2018/07/02 19:09:24 by vbrazhni         ###   ########.fr       */
+/*   Created: 2019/09/18 17:40:48 by efleta            #+#    #+#             */
+/*   Updated: 2019/09/24 13:23:55 by efleta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include <stdlib.h>
-
-static int		contains_symbol(const char *str, char c)
-{
-	int i;
-
-	i = -1;
-	while (str[++i])
-	{
-		if (str[i] == c)
-			return (1);
-	}
-	return (0);
-}
 
 static size_t	ft_count_words(char const *s, char *separators)
 {
@@ -70,8 +57,6 @@ static char		**ft_get_words(char *s, char *separators, size_t words_count)
 	size_t	i;
 
 	i = 0;
-	if (words_count == 0)
-		return NULL;
 	if ((words = (char **)ft_memalloc(sizeof(char *) * (words_count + 1))))
 	{
 		while (i < words_count)
@@ -98,10 +83,14 @@ char			**ft_strsplit2(char const *s, char *separators)
 {
 	char	**words;
 	char	*line;
+	int		i;
 
 	if (!s || !(line = ft_strdup((char *)s)))
 		return (NULL);
-	words = ft_get_words(line, separators, ft_count_words(line, separators));
+	i = ft_count_words(line, separators);
+	if (i == 0)
+		return (NULL);
+	words = ft_get_words(line, separators, i);
 	ft_strdel(&line);
 	return (words);
 }
